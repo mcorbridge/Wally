@@ -1,0 +1,101 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "com.example.wally"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+        useIR = true
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerVersion "${versions.kotlinCompilerVersion}"
+        kotlinCompilerExtensionVersion "${versions.compose}"
+
+    }
+    // Added to avoid this error -
+    // Execution failed for task ':app:mergeDebugAndroidTestJavaResource'.
+    // > A failure occurred while executing com.android.build.gradle.internal.tasks.MergeJavaResWorkAction
+    // > 2 files found with path 'META-INF/AL2.0' from inputs:
+    packagingOptions {
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/LGPL2.1'
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check"]
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // Kotlin
+    implementation deps.kotlinStdLib
+
+    // Support Libraries
+    implementation deps.support.appCompat
+    implementation deps.support.ktx
+    implementation deps.support.ktxViewModel
+    implementation deps.support.ktxLiveData
+    implementation deps.support.lifecycleExtensions
+
+    // CardView
+    implementation deps.cardView
+
+    // Constraint Layout
+    implementation deps.constraintLayout
+
+    // Coroutine
+    implementation deps.coroutine.core
+
+    // Compose
+    implementation deps.compose.composeRuntime
+    implementation deps.compose.core
+    implementation deps.compose.foundation
+    implementation deps.compose.tooling
+    implementation deps.compose.layout
+    implementation deps.compose.material
+    implementation deps.compose.materialRipple
+    implementation deps.compose.savedInstanceState
+    implementation deps.compose.uiLiveData
+    androidTestImplementation deps.compose.uiTest
+
+    // Image loading
+    implementation deps.imageLoading.picasso
+    implementation deps.imageLoading.glideCore
+
+    testImplementation deps.test.junit
+    androidTestImplementation deps.test.junitImplementation
+
+    //
+    implementation "androidx.appcompat:appcompat:1.3.0"
+    implementation 'com.google.android.material:material:1.4.0'
+}
