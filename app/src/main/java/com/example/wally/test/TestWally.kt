@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import java.text.DecimalFormat
 class TestWally {
 
     private val rotation = FloatPropKey()
+    val dec = DecimalFormat("#,###")
 
     @Composable
     fun DoTest() {
@@ -37,9 +39,10 @@ class TestWally {
         // I struggled with this as my code kept triggering a recursive recomposition of
         // DoRotation each time the rotation value changed (it changes ALOT!), which created a
         // steaming pile of shit in the UI.
+
         @Composable
         fun DoZotation() {
-            Text("current rotation: $rotationValue degrees")
+            Text("current rotation: ${dec.format(rotationValue)} degrees")
         }
 
 
@@ -139,6 +142,10 @@ class TestWally {
             mutableStateOf(duration)
         }
 
+        var rpm by remember {
+            mutableStateOf(60.0f)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,7 +155,7 @@ class TestWally {
 
             content = {
 
-                val dec = DecimalFormat("#,###")
+
 
                 val state = transition(
                     definition = getRotationTransitionDefinition(duration, easingValues),
@@ -191,6 +198,7 @@ class TestWally {
                         if (duration == 0) {
                             duration = 1000
                         }
+                        rpm = (1000f / duration.toFloat()) * 60f
                         callback(duration)
                     }) {
                         Text("duration--")
@@ -200,6 +208,7 @@ class TestWally {
 
                     Button(onClick = {
                         duration += 1000
+                        rpm = (1000f / duration.toFloat()) * 60f
                         callback(duration)
                     }) {
                         Text("duration++")
@@ -207,7 +216,7 @@ class TestWally {
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Text("---")
+                    Text("rpm = $rpm")
 
                 }
 
